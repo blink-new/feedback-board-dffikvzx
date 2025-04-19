@@ -16,69 +16,14 @@ export type FeedbackItem = {
   createdAt: Date
 }
 
-// Sample feedback data
-const sampleFeedback: FeedbackItem[] = [
-  {
-    id: '1',
-    title: 'Add dark mode support',
-    description: 'It would be great to have a dark mode option for better visibility in low-light environments.',
-    category: 'feature',
-    votes: 15,
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
-  },
-  {
-    id: '2',
-    title: 'Fix login button on mobile',
-    description: 'The login button is not working properly on mobile devices. It disappears when tapped.',
-    category: 'bug',
-    votes: 8,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
-  },
-  {
-    id: '3',
-    title: 'Improve loading speed',
-    description: 'The app takes too long to load on slower connections. Please optimize performance.',
-    category: 'improvement',
-    votes: 12,
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
-  },
-  {
-    id: '4',
-    title: 'Add export to CSV feature',
-    description: 'Would be helpful to export data to CSV for further analysis in spreadsheets.',
-    category: 'feature',
-    votes: 6,
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
-  },
-  {
-    id: '5',
-    title: 'Documentation needs updating',
-    description: 'The API documentation is outdated and missing some of the newer endpoints.',
-    category: 'other',
-    votes: 4,
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
-  }
-];
-
 function App() {
-  // State for feedback items with proper initialization
+  // State for feedback items
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>(() => {
-    try {
-      const savedItems = localStorage.getItem('feedbackItems')
-      if (savedItems) {
-        // Parse the saved items and convert date strings back to Date objects
-        return JSON.parse(savedItems, (key, value) => {
-          if (key === 'createdAt') return new Date(value)
-          return value
-        })
-      }
-    } catch (error) {
-      console.error('Error loading feedback from localStorage:', error)
-      // Clear potentially corrupted data
-      localStorage.removeItem('feedbackItems')
-    }
-    // Return sample data if no saved items or error occurred
-    return sampleFeedback
+    const savedItems = localStorage.getItem('feedbackItems')
+    return savedItems ? JSON.parse(savedItems, (key, value) => {
+      if (key === 'createdAt') return new Date(value)
+      return value
+    }) : []
   })
   
   // State for active category filter
@@ -86,11 +31,7 @@ function App() {
   
   // Save feedback items to localStorage whenever they change
   useEffect(() => {
-    try {
-      localStorage.setItem('feedbackItems', JSON.stringify(feedbackItems))
-    } catch (error) {
-      console.error('Error saving feedback to localStorage:', error)
-    }
+    localStorage.setItem('feedbackItems', JSON.stringify(feedbackItems))
   }, [feedbackItems])
   
   // Add new feedback
@@ -121,19 +62,6 @@ function App() {
   
   // Sort feedback items by votes (descending)
   const sortedItems = [...filteredItems].sort((a, b) => b.votes - a.votes)
-  
-  // Clear localStorage and reset to sample data (for testing)
-  const resetToSampleData = () => {
-    localStorage.removeItem('feedbackItems')
-    setFeedbackItems(sampleFeedback)
-  }
-  
-  // For development purposes, reset data on first load
-  useEffect(() => {
-    resetToSampleData()
-    // This effect should only run once on initial mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
   
   return (
     <ThemeProvider defaultTheme="light" storageKey="feedback-theme">
