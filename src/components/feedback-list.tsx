@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "./ui/card"
 import { Button } from "./ui/button"
 import { Badge } from "./ui/badge"
 import { cn } from "../lib/utils"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import type { FeedbackItem } from "../App"
 
 interface FeedbackListProps {
@@ -71,51 +71,57 @@ export function FeedbackList({ items, onVote, isLoading = false }: FeedbackListP
       </h2>
       
       <div className="space-y-4">
-        {items.map((item) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Card className="overflow-hidden">
-              <div className="flex">
-                <div className="flex flex-col items-center justify-start p-4 bg-secondary/50">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-full h-10 w-10 p-0"
-                    onClick={() => onVote(item.id)}
-                  >
-                    <ChevronUp className="h-5 w-5" />
-                  </Button>
-                  <span className="font-bold text-lg">{item.votes}</span>
-                </div>
-                
-                <div className="flex-1">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">{item.title}</h3>
-                      <Badge className={cn("text-white", categoryStyles[item.category])}>
-                        {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                      </Badge>
-                    </div>
-                  </CardHeader>
+        <AnimatePresence>
+          {items.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ 
+                duration: 0.3,
+                delay: index * 0.05 // Stagger the animations
+              }}
+            >
+              <Card className="overflow-hidden border-transparent hover:border-primary/20 transition-all duration-200 hover:shadow-md">
+                <div className="flex">
+                  <div className="flex flex-col items-center justify-start p-4 bg-secondary/50">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-full h-10 w-10 p-0 hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                      onClick={() => onVote(item.id)}
+                    >
+                      <ChevronUp className="h-5 w-5" />
+                    </Button>
+                    <span className="font-bold text-lg">{item.votes}</span>
+                  </div>
                   
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      {item.description || "No description provided."}
-                    </p>
-                  </CardContent>
-                  
-                  <CardFooter className="text-xs text-muted-foreground pt-0">
-                    Submitted {formatRelativeTime(item.createdAt)}
-                  </CardFooter>
+                  <div className="flex-1">
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">{item.title}</h3>
+                        <Badge className={cn("text-white", categoryStyles[item.category])}>
+                          {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent>
+                      <p className="text-muted-foreground">
+                        {item.description || "No description provided."}
+                      </p>
+                    </CardContent>
+                    
+                    <CardFooter className="text-xs text-muted-foreground pt-0">
+                      Submitted {formatRelativeTime(item.createdAt)}
+                    </CardFooter>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   )

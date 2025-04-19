@@ -7,6 +7,7 @@ import { Textarea } from "./ui/textarea"
 import { Button } from "./ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { toast } from "sonner"
+import { PlusCircle } from "lucide-react"
 import type { FeedbackItem } from "../App"
 
 interface FeedbackFormProps {
@@ -17,6 +18,7 @@ export function FeedbackForm({ onSubmit }: FeedbackFormProps) {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<FeedbackItem['category']>('feature')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,24 +28,33 @@ export function FeedbackForm({ onSubmit }: FeedbackFormProps) {
       return
     }
     
-    onSubmit({
-      title,
-      description,
-      category,
-    })
+    setIsSubmitting(true)
     
-    // Reset form
-    setTitle("")
-    setDescription("")
-    setCategory('feature')
-    
-    toast.success("Feedback submitted successfully!")
+    // Simulate a slight delay for better UX
+    setTimeout(() => {
+      onSubmit({
+        title,
+        description,
+        category,
+      })
+      
+      // Reset form
+      setTitle("")
+      setDescription("")
+      setCategory('feature')
+      setIsSubmitting(false)
+      
+      toast.success("Feedback submitted successfully!")
+    }, 500)
   }
   
   return (
     <Card className="shadow-md">
-      <CardHeader>
-        <CardTitle>Submit Feedback</CardTitle>
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2">
+          <PlusCircle className="h-5 w-5 text-primary" />
+          Submit Feedback
+        </CardTitle>
         <CardDescription>
           Share your ideas, report bugs, or suggest improvements
         </CardDescription>
@@ -58,6 +69,7 @@ export function FeedbackForm({ onSubmit }: FeedbackFormProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
+              className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
             />
           </div>
           
@@ -68,7 +80,7 @@ export function FeedbackForm({ onSubmit }: FeedbackFormProps) {
               placeholder="Provide details about your feedback..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[120px]"
+              className="min-h-[120px] transition-all duration-200 focus:ring-2 focus:ring-primary/20"
             />
           </div>
           
@@ -78,7 +90,7 @@ export function FeedbackForm({ onSubmit }: FeedbackFormProps) {
               value={category}
               onValueChange={(value) => setCategory(value as FeedbackItem['category'])}
             >
-              <SelectTrigger id="category">
+              <SelectTrigger id="category" className="transition-all duration-200 focus:ring-2 focus:ring-primary/20">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
@@ -92,7 +104,20 @@ export function FeedbackForm({ onSubmit }: FeedbackFormProps) {
         </CardContent>
         
         <CardFooter>
-          <Button type="submit" className="w-full">Submit Feedback</Button>
+          <Button 
+            type="submit" 
+            className="w-full transition-all duration-200 hover:shadow-md"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="mr-2">Submitting...</span>
+                <span className="animate-pulse">•••</span>
+              </>
+            ) : (
+              "Submit Feedback"
+            )}
+          </Button>
         </CardFooter>
       </form>
     </Card>

@@ -4,7 +4,7 @@ import { ThemeProvider } from './components/theme-provider'
 import { Header } from './components/header'
 import { FeedbackForm } from './components/feedback-form'
 import { FeedbackList } from './components/feedback-list'
-import { Toaster } from './components/ui/sonner'
+import { Toaster } from 'sonner'
 
 // Define the feedback item type
 export type FeedbackItem = {
@@ -128,7 +128,7 @@ function App() {
             </div>
           </main>
         </div>
-        <Toaster />
+        <Toaster position="top-right" richColors />
       </div>
     </ThemeProvider>
   )
