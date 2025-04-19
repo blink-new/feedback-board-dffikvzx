@@ -61,13 +61,24 @@ const sampleFeedback: FeedbackItem[] = [
 ];
 
 function App() {
-  // State for feedback items
+  // State for feedback items with proper initialization
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>(() => {
-    const savedItems = localStorage.getItem('feedbackItems')
-    return savedItems ? JSON.parse(savedItems, (key, value) => {
-      if (key === 'createdAt') return new Date(value)
-      return value
-    }) : sampleFeedback // Use sample data if no saved items
+    try {
+      const savedItems = localStorage.getItem('feedbackItems')
+      if (savedItems) {
+        // Parse the saved items and convert date strings back to Date objects
+        return JSON.parse(savedItems, (key, value) => {
+          if (key === 'createdAt') return new Date(value)
+          return value
+        })
+      }
+    } catch (error) {
+      console.error('Error loading feedback from localStorage:', error)
+      // Clear potentially corrupted data
+      localStorage.removeItem('feedbackItems')
+    }
+    // Return sample data if no saved items or error occurred
+    return sampleFeedback
   })
   
   // State for active category filter
@@ -75,7 +86,11 @@ function App() {
   
   // Save feedback items to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('feedbackItems', JSON.stringify(feedbackItems))
+    try {
+      localStorage.setItem('feedbackItems', JSON.stringify(feedbackItems))
+    } catch (error) {
+      console.error('Error saving feedback to localStorage:', error)
+    }
   }, [feedbackItems])
   
   // Add new feedback
@@ -106,6 +121,19 @@ function App() {
   
   // Sort feedback items by votes (descending)
   const sortedItems = [...filteredItems].sort((a, b) => b.votes - a.votes)
+  
+  // Clear localStorage and reset to sample data (for testing)
+  const resetToSampleData = () => {
+    localStorage.removeItem('feedbackItems')
+    setFeedbackItems(sampleFeedback)
+  }
+  
+  // For development purposes, reset data on first load
+  useEffect(() => {
+    resetToSampleData()
+    // This effect should only run once on initial mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   
   return (
     <ThemeProvider defaultTheme="light" storageKey="feedback-theme">
