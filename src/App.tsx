@@ -17,52 +17,66 @@ export type FeedbackItem = {
 }
 
 function App() {
+  // Loading state
+  const [isLoading, setIsLoading] = useState(true)
+  
   // State for feedback items
-  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([
-    {
-      id: '1',
-      title: 'Add dark mode support',
-      description: 'It would be great to have a dark mode option for better visibility in low-light environments.',
-      category: 'feature',
-      votes: 15,
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
-    },
-    {
-      id: '2',
-      title: 'Fix login button on mobile',
-      description: 'The login button is not working properly on mobile devices. It disappears when tapped.',
-      category: 'bug',
-      votes: 8,
-      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
-    },
-    {
-      id: '3',
-      title: 'Improve loading speed',
-      description: 'The app takes too long to load on slower connections. Please optimize performance.',
-      category: 'improvement',
-      votes: 12,
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
-    },
-    {
-      id: '4',
-      title: 'Add export to CSV feature',
-      description: 'Would be helpful to export data to CSV for further analysis in spreadsheets.',
-      category: 'feature',
-      votes: 6,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
-    },
-    {
-      id: '5',
-      title: 'Documentation needs updating',
-      description: 'The API documentation is outdated and missing some of the newer endpoints.',
-      category: 'other',
-      votes: 4,
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
-    }
-  ])
+  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([])
   
   // State for active category filter
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  
+  // Initialize with sample data
+  useEffect(() => {
+    const sampleData = [
+      {
+        id: '1',
+        title: 'Add dark mode support',
+        description: 'It would be great to have a dark mode option for better visibility in low-light environments.',
+        category: 'feature' as const,
+        votes: 15,
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
+      },
+      {
+        id: '2',
+        title: 'Fix login button on mobile',
+        description: 'The login button is not working properly on mobile devices. It disappears when tapped.',
+        category: 'bug' as const,
+        votes: 8,
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+      },
+      {
+        id: '3',
+        title: 'Improve loading speed',
+        description: 'The app takes too long to load on slower connections. Please optimize performance.',
+        category: 'improvement' as const,
+        votes: 12,
+        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
+      },
+      {
+        id: '4',
+        title: 'Add export to CSV feature',
+        description: 'Would be helpful to export data to CSV for further analysis in spreadsheets.',
+        category: 'feature' as const,
+        votes: 6,
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+      },
+      {
+        id: '5',
+        title: 'Documentation needs updating',
+        description: 'The API documentation is outdated and missing some of the newer endpoints.',
+        category: 'other' as const,
+        votes: 4,
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
+      }
+    ]
+    
+    // Set sample data after a short delay
+    setTimeout(() => {
+      setFeedbackItems(sampleData)
+      setIsLoading(false)
+    }, 500)
+  }, [])
   
   // Add new feedback
   const addFeedback = (feedback: Omit<FeedbackItem, 'id' | 'votes' | 'createdAt'>) => {
@@ -109,6 +123,7 @@ function App() {
               <FeedbackList 
                 items={sortedItems} 
                 onVote={voteFeedback}
+                isLoading={isLoading}
               />
             </div>
           </main>
